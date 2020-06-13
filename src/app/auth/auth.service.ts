@@ -12,7 +12,9 @@ export class AuthService {
   authChange = new Subject<boolean>();
   private user: User;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    this.user = null;
+  }
 
   registerUser(authData: AuthData) {
     this.user = {
