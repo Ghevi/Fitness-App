@@ -12,13 +12,6 @@ export class TrainingService {
   exercisesChanged = new Subject<Exercise[]>();
   finishedExercisesChanged = new Subject<Exercise[]>();
 
-  // private availableExercises: Exercise[] = [
-  //   { id: "crunches", name: "Crunches", duration: 100, calories: 20 },
-  //   { id: "cardio", name: "Cardio", duration: 30, calories: 500 },
-  //   { id: "side-lunges", name: "Side Lunges", duration: 10, calories: 30 },
-  //   { id: "jumping-jacks", name: "Jumping Jacks", duration: 5, calories: 40 },
-  // ];
-
   private availableExercises: Exercise[] = [];
   private runningExercise: Exercise;
   private fbSubs: Subscription[] = [];
@@ -26,7 +19,6 @@ export class TrainingService {
   constructor(private db: AngularFirestore, private uiService: UIService) {}
 
   startExercise(selectedId: string) {
-    // this.db.doc('availableExercises/' + selectedId).update({lastSelected: new Date()});
     this.runningExercise = this.availableExercises.find(
       (ex) => ex.id === selectedId
     );
@@ -56,12 +48,10 @@ export class TrainingService {
   }
 
   fetchAvailableExercises() {
-    // return this.availableExercises.slice();
     this.uiService.loadingStateChange.next(true);
     this.fbSubs.push(
       this.db
         .collection("availableExercises")
-        //.valueChanges(); // strips out the metadata from the db like the id
         .snapshotChanges()
         .map((docArray) => {
           return docArray.map((doc) => {
@@ -84,7 +74,6 @@ export class TrainingService {
   }
 
   fetchCompletedOrCancelledExercises() {
-    // return this.exercises.slice();
     this.fbSubs.push(
       this.db
         .collection("finishedExercises")
@@ -93,10 +82,6 @@ export class TrainingService {
           (exercises: Exercise[]) => {
             this.finishedExercisesChanged.next(exercises);
           }
-          // This hides the error of the subscription on the logout
-          // (error) => {
-          //   console.log(error);
-          // }
         )
     );
   }
