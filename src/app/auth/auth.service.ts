@@ -12,7 +12,6 @@ import { UIService } from '../shared/ui.service';
 })
 export class AuthService {
   authChange = new Subject<boolean>();
-  // private user: User;
   private isAuthenticated = false;
 
   constructor(
@@ -38,10 +37,6 @@ export class AuthService {
   }
 
   registerUser(authData: AuthData) {
-    // this.user = {
-    //   email: authData.email,
-    //   userId: Math.round(Math.random() * 10000).toString()
-    // };
     this.uiService.loadingStateChange.next(true);
     this.afAuth.auth
       .createUserWithEmailAndPassword(authData.email, authData.password)
@@ -49,48 +44,30 @@ export class AuthService {
         this.uiService.loadingStateChange.next(false);
       })
       .catch((error) => {
-        // console.log(error);
         this.uiService.loadingStateChange.next(false);
-        // this.snackbar.open(error.message, null, {
-        //   duration: 3000
-        // });
         this.uiService.showSnackbar(error.message, null, 3000)
       });
   }
 
   login(authData: AuthData) {
-    // this.user = {
-    //   email: authData.email,
-    //   userId: Math.round(Math.random() * 10000).toString(),
-    // };
     this.uiService.loadingStateChange.next(true);
     this.afAuth.auth
       .signInWithEmailAndPassword(authData.email, authData.password)
       .then((result) => {
-        // console.log(result);
         this.uiService.loadingStateChange.next(false);
       })
       .catch((error) => {
-        // console.log(error);
         this.uiService.loadingStateChange.next(false);
-        // this.snackbar.open(error.message, null, {
-        //   duration: 3000
-        // });
         this.uiService.showSnackbar(error.message, null, 3000)
       });
   }
 
   logout() {
     this.afAuth.auth.signOut();
-    // this.user = null;
   }
 
-  // getUser() {
-  //   return { ...this.user };
-  // }
-
   isAuth() {
-    // return this.user !== null;
+
     return this.isAuthenticated;
   }
 }
