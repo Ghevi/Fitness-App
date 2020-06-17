@@ -1,11 +1,11 @@
-import { Subject } from "rxjs/Subject";
-
-import { User } from "./user.model";
-import { AuthData } from "./auth-data.model";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
+import { Subject } from "rxjs/Subject";
 import { AngularFireAuth } from "angularfire2/auth";
+
+import { AuthData } from "./auth-data.model";
 import { TrainingService } from "../training/training.service";
+import { UIService } from '../shared/ui.service';
 
 @Injectable({
   providedIn: "root",
@@ -18,7 +18,8 @@ export class AuthService {
   constructor(
     private router: Router,
     private afAuth: AngularFireAuth,
-    private trainingService: TrainingService
+    private trainingService: TrainingService,
+    private uiService: UIService
   ) {}
 
   initAuthListener() {
@@ -41,12 +42,19 @@ export class AuthService {
     //   email: authData.email,
     //   userId: Math.round(Math.random() * 10000).toString()
     // };
+    this.uiService.loadingStateChange.next(true);
     this.afAuth.auth
       .createUserWithEmailAndPassword(authData.email, authData.password)
       .then((result) => {
+        this.uiService.loadingStateChange.next(false);
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
+        this.uiService.loadingStateChange.next(false);
+        // this.snackbar.open(error.message, null, {
+        //   duration: 3000
+        // });
+        this.uiService.showSnackbar(error.message, null, 3000)
       });
   }
 
@@ -55,13 +63,20 @@ export class AuthService {
     //   email: authData.email,
     //   userId: Math.round(Math.random() * 10000).toString(),
     // };
+    this.uiService.loadingStateChange.next(true);
     this.afAuth.auth
       .signInWithEmailAndPassword(authData.email, authData.password)
       .then((result) => {
-        console.log(result);
+        // console.log(result);
+        this.uiService.loadingStateChange.next(false);
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
+        this.uiService.loadingStateChange.next(false);
+        // this.snackbar.open(error.message, null, {
+        //   duration: 3000
+        // });
+        this.uiService.showSnackbar(error.message, null, 3000)
       });
   }
 
