@@ -8,7 +8,7 @@ import {
   STOP_TRAINING,
 } from "./training.actions";
 import { Exercise } from "./exercise.model";
-import * as fromRoot from "../app.reducer";
+import * as fromRoot from "../";
 
 export interface TrainingState {
   availableExercises: Exercise[];

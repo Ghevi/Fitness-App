@@ -7,7 +7,7 @@ import { Exercise } from "./exercise.model";
 import { UIService } from "../shared/ui.service";
 import * as UI from "../shared/ui.actions";
 import * as fromTraining from "./training.reducer";
-import * as Training from './training.actions'
+import * as Training from "./training.actions";
 
 @Injectable({
   providedIn: "root",
@@ -16,13 +16,6 @@ export class TrainingService {
   exerciseChanged = new Subject<Exercise>();
   exercisesChanged = new Subject<Exercise[]>();
   finishedExercisesChanged = new Subject<Exercise[]>();
-
-  // private availableExercises: Exercise[] = [
-  //   { id: "crunches", name: "Crunches", duration: 100, calories: 20 },
-  //   { id: "cardio", name: "Cardio", duration: 30, calories: 500 },
-  //   { id: "side-lunges", name: "Side Lunges", duration: 10, calories: 30 },
-  //   { id: "jumping-jacks", name: "Jumping Jacks", duration: 5, calories: 40 },
-  // ];
 
   private availableExercises: Exercise[] = [];
   private runningExercise: Exercise;
@@ -35,13 +28,7 @@ export class TrainingService {
   ) {}
 
   startExercise(selectedId: string) {
-    this.store.dispatch(new Training.StartTraining(selectedId))
-
-    // this.db.doc('availableExercises/' + selectedId).update({lastSelected: new Date()});
-    // this.runningExercise = this.availableExercises.find(
-    //   (ex) => ex.id === selectedId
-    // );
-    // this.exerciseChanged.next({ ...this.runningExercise });
+    this.store.dispatch(new Training.StartTraining(selectedId));
   }
 
   completeExercise() {
@@ -50,10 +37,7 @@ export class TrainingService {
       date: new Date(),
       state: "completed",
     });
-    this.store.dispatch(new Training.StopTraining())
-
-    // this.runningExercise = null;
-    // this.exerciseChanged.next(null);
+    this.store.dispatch(new Training.StopTraining());
   }
 
   cancelExercise(progress: number) {
@@ -64,16 +48,10 @@ export class TrainingService {
       date: new Date(),
       state: "cancelled",
     });
-    this.store.dispatch(new Training.StopTraining())
-
-    // this.runningExercise = null;
-    // this.exerciseChanged.next(null);
+    this.store.dispatch(new Training.StopTraining());
   }
 
   fetchAvailableExercises() {
-    // return this.availableExercises.slice();
-
-    // this.uiService.loadingStateChange.next(true);
     this.store.dispatch(new UI.StartLoading());
 
     this.fbSubs.push(
@@ -92,16 +70,10 @@ export class TrainingService {
         })
         .subscribe(
           (exercises: Exercise[]) => {
-            // this.uiService.loadingStateChange.next(false);
-
             this.store.dispatch(new UI.StopLoading());
-            this.store.dispatch(new Training.SetAvailableTrainings(exercises))
-
-            // this.availableExercises = exercises;
-            // this.exercisesChanged.next([...this.availableExercises]);
+            this.store.dispatch(new Training.SetAvailableTrainings(exercises));
           },
           (error) => {
-            // this.uiService.loadingStateChange.next(false);
             this.store.dispatch(new UI.StopLoading());
 
             this.uiService.showSnackbar(
@@ -120,21 +92,13 @@ export class TrainingService {
   }
 
   fetchCompletedOrCancelledExercises() {
-    // return this.exercises.slice();
     this.fbSubs.push(
       this.db
         .collection("finishedExercises")
         .valueChanges()
-        .subscribe(
-          (exercises: Exercise[]) => {
-            this.store.dispatch(new Training.SetFinishedTrainings(exercises))
-            // this.finishedExercisesChanged.next(exercises);
-          }
-          // This hides the error of the subscription on the logout
-          // (error) => {
-          //   console.log(error);
-          // }
-        )
+        .subscribe((exercises: Exercise[]) => {
+          this.store.dispatch(new Training.SetFinishedTrainings(exercises));
+        })
     );
   }
 

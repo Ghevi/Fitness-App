@@ -12,7 +12,6 @@ import { Observable } from "rxjs";
 })
 export class TrainingComponent implements OnInit {
   ongoingTraining$: Observable<boolean>;
-  // exerciseSubscription: Subscription;
 
   constructor(
     private trainingService: TrainingService,
@@ -21,15 +20,5 @@ export class TrainingComponent implements OnInit {
 
   ngOnInit() {
     this.ongoingTraining$ = this.store.select(fromTraining.getIsTraining);
-
-    // this.exerciseSubscription = this.trainingService.exerciseChanged.subscribe(exercise => {
-    //   this.ongoingTraining = (exercise) ? true : false;
-    // });
   }
-
-  // ngOnDestroy() {
-  //   if(this.exerciseSubscription) {
-  //     this.exerciseSubscription.unsubscribe();
-  //   }
-  // }
 }

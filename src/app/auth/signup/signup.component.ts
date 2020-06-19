@@ -23,11 +23,6 @@ export class SignupComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.loadingSubs = this.uiService.loadingStateChange.subscribe(
-    //   (isLoading) => {
-    //     this.isLoading = isLoading;
-    //   }
-    // );
     this.isLoading$ = this.store.select(fromRoot.getIsLoading);
     this.maxDate = new Date();
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
@@ -39,10 +34,4 @@ export class SignupComponent implements OnInit {
       password: form.value.password,
     });
   }
-
-  // ngOnDestroy() {
-  //   if (this.loadingSubs) {
-  //     this.loadingSubs.unsubscribe();
-  //   }
-  // }
 }
