@@ -1,23 +1,29 @@
-import { Component, OnInit, EventEmitter, Output, OnDestroy } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+
+import * as fromRoot from '../../app.reducer'
 
 @Component({
   selector: 'app-sidenav-list',
   templateUrl: './sidenav-list.component.html',
   styleUrls: ['./sidenav-list.component.css']
 })
-export class SidenavListComponent implements OnInit, OnDestroy {
+export class SidenavListComponent implements OnInit {
   @Output() closeSidenav = new EventEmitter<void>();
-  isAuth = false;
+  // isAuth = false;
+  isAuth$: Observable<boolean>;
   authSubscription: Subscription;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private store: Store<fromRoot.State>) { }
 
   ngOnInit() {
-    this.authSubscription = this.authService.authChange.subscribe(authState => {
-      this.isAuth = authState;
-    });
+    this.isAuth$ = this.store.select(fromRoot.getIsAuth)
+
+    // this.authSubscription = this.authService.authChange.subscribe(authState => {
+    //   this.isAuth = authState;
+    // });
   }
 
   onClose() {
@@ -29,7 +35,7 @@ export class SidenavListComponent implements OnInit, OnDestroy {
     this.authService.logout();
   }
 
-  ngOnDestroy() {
-    this.authSubscription.unsubscribe();
-  }
+  // ngOnDestroy() {
+  //   this.authSubscription.unsubscribe();
+  // }
 }
