@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
-import { Subject, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { AngularFirestore } from "angularfire2/firestore";
+import { take } from "rxjs/operators";
 import { Store } from "@ngrx/store";
 
 import { Exercise } from "./exercise.model";
@@ -13,12 +14,6 @@ import * as Training from "./training.actions";
   providedIn: "root",
 })
 export class TrainingService {
-  exerciseChanged = new Subject<Exercise>();
-  exercisesChanged = new Subject<Exercise[]>();
-  finishedExercisesChanged = new Subject<Exercise[]>();
-
-  private availableExercises: Exercise[] = [];
-  private runningExercise: Exercise;
   private fbSubs: Subscription[] = [];
 
   constructor(
@@ -32,23 +27,33 @@ export class TrainingService {
   }
 
   completeExercise() {
-    this.addDataToDatabase({
-      ...this.runningExercise,
-      date: new Date(),
-      state: "completed",
-    });
-    this.store.dispatch(new Training.StopTraining());
+    this.store
+      .select(fromTraining.getActiveTraining)
+      .pipe(take(1))
+      .subscribe((ex) => {
+        this.addDataToDatabase({
+          ...ex,
+          date: new Date(),
+          state: "completed",
+        });
+        this.store.dispatch(new Training.StopTraining());
+      });
   }
 
   cancelExercise(progress: number) {
-    this.addDataToDatabase({
-      ...this.runningExercise,
-      duration: this.runningExercise.duration * (progress / 100),
-      calories: this.runningExercise.calories * (progress / 100),
-      date: new Date(),
-      state: "cancelled",
-    });
-    this.store.dispatch(new Training.StopTraining());
+    this.store
+      .select(fromTraining.getActiveTraining)
+      .pipe(take(1))
+      .subscribe((ex) => {
+        this.addDataToDatabase({
+          ...ex,
+          duration: ex.duration * (progress / 100),
+          calories: ex.calories * (progress / 100),
+          date: new Date(),
+          state: "cancelled",
+        });
+        this.store.dispatch(new Training.StopTraining());
+      });
   }
 
   fetchAvailableExercises() {
@@ -81,14 +86,9 @@ export class TrainingService {
               null,
               3000
             );
-            this.exercisesChanged.next(null);
           }
         )
     );
-  }
-
-  getRunningExercise() {
-    return { ...this.runningExercise };
   }
 
   fetchCompletedOrCancelledExercises() {
